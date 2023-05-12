@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Divider
@@ -17,32 +18,30 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mongodb.talktome.R
-import com.mongodb.talktome.ui.theme.TalkToMeTheme
+import com.mongodb.talktome.viewmodels.TalksListViewModel
 
 @Composable
-fun TalksListView(modifier: Modifier = Modifier) {
+fun TalksListView(viewModel: TalksListViewModel) {
     Scaffold(
         topBar = { TopAppBar(title = { Text(text = stringResource(id = R.string.app_name)) }) },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                // Action not defined yet
+                viewModel.addButtonTapped()
             }) {
                 Icon(Icons.Filled.Add, "Add talks")
             }
         }
     ) { innerPadding ->
+        val talks by viewModel.talks.observeAsState(emptyList())
         LazyColumn(contentPadding = innerPadding) {
-            item {
-                TalksListItem(title = "Growing Hyperpotatoes", speaker = "Captn. Hype")
-                Divider()
-            }
-            item {
-                TalksListItem(title = "The wild mushrooms rebellion", speaker = "Toad")
+            items(talks) { talk ->
+                TalksListItem(title = talk.title, speaker = talk.speaker)
                 Divider()
             }
         }
@@ -64,13 +63,5 @@ fun TalksListItem(title: String, speaker: String) {
             text = speaker,
             style = MaterialTheme.typography.titleLarge
         )
-    }
-}
-
-@Preview
-@Composable
-fun TalksListViewPreview() {
-    TalkToMeTheme {
-        TalksListView()
     }
 }
