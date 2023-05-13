@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val config = RealmConfiguration.Builder(schema = setOf(Talk::class))
+            .deleteRealmIfMigrationNeeded()
             .build()
         val realm: Realm = Realm.open(config)
         val viewModel = TalksListViewModel(realm = realm)
