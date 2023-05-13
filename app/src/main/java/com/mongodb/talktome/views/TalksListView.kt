@@ -27,24 +27,34 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.mongodb.talktome.R
+import com.mongodb.talktome.viewmodels.TalkEntryViewModel
 import com.mongodb.talktome.viewmodels.TalksListViewModel
 
 @Composable
 fun TalksListView(viewModel: TalksListViewModel) {
+    // <editor-fold desc="State">
+    var showDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
+    // </editor-fold>
+
     Scaffold(
         topBar = { TopAppBar(title = { Text(text = stringResource(id = R.string.app_name)) }) },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                viewModel.addButtonTapped()
+                showDialog.value = true
             }) {
                 Icon(Icons.Filled.Add, "Add talks")
             }
@@ -97,6 +107,22 @@ fun TalksListView(viewModel: TalksListViewModel) {
                     directions = setOf(DismissDirection.EndToStart)
                 )
                 Divider()
+            }
+        }
+        if (showDialog.value) {
+            Dialog(
+                onDismissRequest = {
+                    showDialog.value = false
+                },
+                properties = DialogProperties(
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = false
+                )
+            ) {
+                TalkEntryView(
+                    viewModel = TalkEntryViewModel(realm = viewModel.realm),
+                    dialogState = showDialog
+                )
             }
         }
     }
