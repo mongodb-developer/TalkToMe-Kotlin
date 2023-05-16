@@ -8,13 +8,15 @@ import org.mongodb.kbson.ObjectId
 class Talk() : RealmObject {
     @PrimaryKey
     var _id: ObjectId = ObjectId()
+    var ownerId: String = ""
     var title: String = ""
     var speaker: String = ""
     private var proposedDate: RealmInstant = RealmInstant.now()
     var scheduledDate: RealmInstant? = null
 
-    constructor(title: String, speaker: String) : this() {
+    constructor(title: String, speaker: String, ownerId: String) : this() {
         this.title = title
         this.speaker = speaker
+        this.ownerId = ownerId
     }
 }
